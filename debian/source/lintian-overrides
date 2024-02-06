@@ -1,0 +1,4 @@
+snappy source: file-without-copyright-information
+snappy source: no-debian-changes
+snappy source: not-binnmuable-any-depends-any
+snappy source: weak-library-dev-dependency
