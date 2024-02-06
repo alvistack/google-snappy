@@ -76,10 +76,6 @@ else(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   # Disable C++ exceptions.
   string(REGEX REPLACE "-fexceptions" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
-
-  # Disable RTTI.
-  string(REGEX REPLACE "-frtti" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
 endif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 
 # BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to make
@@ -271,6 +267,34 @@ if(BUILD_SHARED_LIBS)
   set_target_properties(snappy PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif(BUILD_SHARED_LIBS)
 
+if(UNIX)
+  configure_file(
+    "${PROJECT_SOURCE_DIR}/cmake/snappy.pc.in"
+    "${PROJECT_BINARY_DIR}/snappy.pc"
+    @ONLY
+  )
+  install(FILES "${PROJECT_BINARY_DIR}/snappy.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+endif(UNIX)
+
+ADD_LIBRARY(snappy-static STATIC
+        snappy-c.cc
+        snappy-c.h
+        snappy-sinksource.cc
+        snappy-sinksource.h
+        snappy-stubs-internal.cc
+        snappy-stubs-public.h
+        snappy.cc
+        snappy.h)
+
+target_include_directories(snappy-static
+  PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>
+)
+
+SET_TARGET_PROPERTIES(snappy-static PROPERTIES OUTPUT_NAME snappy)
+
 if(SNAPPY_BUILD_TESTS OR SNAPPY_BUILD_BENCHMARKS)
   add_library(snappy_test_support "")
   target_sources(snappy_test_support
@@ -381,7 +405,7 @@ endif(SNAPPY_FUZZING_BUILD)
 include(GNUInstallDirs)
 
 if(SNAPPY_INSTALL)
-  install(TARGETS snappy
+  install(TARGETS snappy snappy-static
     EXPORT SnappyTargets
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

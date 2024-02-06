@@ -1,0 +1,42 @@
+Source: snappy
+Section: libs
+Priority: optional
+Standards-Version: 4.5.0
+Maintainer: Wong Hoi Sing Edison <hswong3i@pantarei-design.com>
+Homepage: https://github.com/google/snappy
+Vcs-Browser: https://github.com/alvistack/google-snappy
+Vcs-Git: https://github.com/alvistack/google-snappy.git
+Build-Depends:
+ debhelper,
+ debhelper-compat (= 10),
+ cmake,
+ liblz4-dev,
+ liblzo2-dev,
+ pkg-config,
+ zlib1g-dev,
+
+Package: libsnappy1v5
+Section: libs
+Architecture: amd64
+Description: Fast compression/decompression library
+ Snappy is a compression/decompression library. It does not aim for
+ maximum compression, or compatibility with any other compression
+ library; instead, it aims for very high speeds and reasonable
+ compression.
+Pre-Depends:
+ ${misc:Pre-Depends},
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Conflicts:
+ libsnappy1,
+
+Package: libsnappy-dev
+Section: libdevel
+Architecture: amd64
+Description: Fast compression/decompression library (development files)
+ This package contains the development files required to build programs
+ against Snappy.
+Depends:
+ ${misc:Depends},
+ libsnappy1v5 (= ${source:Version}),
