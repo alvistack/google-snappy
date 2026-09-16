@@ -1,0 +1,9 @@
+*.substvars
+*debhelper*
+.debhelper
+autoreconf.*
+files
+tmp
+
+libsnappy-dev
+libsnappy1v5
